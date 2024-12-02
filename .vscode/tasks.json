@@ -1,0 +1,54 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "docker: compose up@gpu",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/docker/up@gpu/"
+            },
+            "command": "docker compose -p watermark-anything up"
+        },
+        {
+            "label": "docker: compose up@cpu",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/docker/up@cpu/"
+            },
+            "command": "docker compose -p watermark-anything up"
+        },
+        {
+            "label": "docker: build main",
+            "type": "shell",
+            "command": "docker build -t xiaoyao9184/watermark-anything:main -f ./docker/build@source/dockerfile ."
+        },
+        {
+            "label": "conda: jupyter run inference notebook",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/watermark-anything",
+            },
+            "command": [
+                "conda run --no-capture-output -n watermark_anything jupyter notebook ./notebooks/inference.ipynb"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "conda: wget download models checkpoint",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/watermark-anything"
+            },
+            "command": [
+                "conda run --no-capture-output -n watermark_anything python -m wget https://dl.fbaipublicfiles.com/watermark_anything/checkpoint.pth -o ./checkpoints/checkpoint.pth"
+            ]
+        },
+        {
+            "label": "conda: create env",
+            "type": "shell",
+            "command": [
+                "conda env create -f ./environment.yml"
+            ]
+        }
+    ]
+}
