@@ -1,0 +1,16 @@
+
+
+services:
+  watermark-anything:
+    image: xiaoyao9184/watermark-anything:main
+    container_name: watermark-anything-nb
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./../../watermark-anything/checkpoints/checkpoint.pth:/app/checkpoints/checkpoint.pth
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
