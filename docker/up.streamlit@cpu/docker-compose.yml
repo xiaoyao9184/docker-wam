@@ -1,0 +1,12 @@
+
+
+services:
+  watermark-anything:
+    image: xiaoyao9184/watermark-anything:main
+    container_name: watermark-anything-streamlit
+    working_dir: /workspace/streamlit
+    command: streamlit run streamlit_app.py
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./../../watermark-anything/checkpoints/checkpoint.pth:/app/checkpoints/checkpoint.pth
