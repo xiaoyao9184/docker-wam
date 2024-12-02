@@ -1,0 +1,7 @@
+watermark-anything/.git/
+watermark-anything/.github/
+watermark-anything/checkpoints/checkpoint.pth
+watermark-anything/outputs/
+watermark-anything/.gitignore
+# Ignore generated files
+**/*.pyc
