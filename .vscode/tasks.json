@@ -2,6 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "docker: compose up.streamlit@gpu",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/docker/up.streamlit@gpu/"
+            },
+            "command": "docker compose -p watermark-anything up"
+        },
+        {
+            "label": "docker: compose up.streamlit@cpu",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/docker/up.streamlit@cpu/"
+            },
+            "command": "docker compose -p watermark-anything up"
+        },
+        {
             "label": "docker: compose up@gpu",
             "type": "shell",
             "options": {
@@ -21,6 +37,21 @@
             "label": "docker: build main",
             "type": "shell",
             "command": "docker build -t xiaoyao9184/watermark-anything:main -f ./docker/build@source/dockerfile ."
+        },
+        {
+            "label": "conda: run watermark-anything streamlit",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/streamlit",
+                "env": {
+                    "STREAMLIT_SERVER_PORT": "8501",
+                    "APP_PATH": "${workspaceFolder}/watermark-anything"
+                }
+            },
+            "command": [
+                "conda run --no-capture-output -n watermark_anything streamlit run streamlit_app.py"
+            ],
+            "problemMatcher": []
         },
         {
             "label": "huggingface-cli: download models",
