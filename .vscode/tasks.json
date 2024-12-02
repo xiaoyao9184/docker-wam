@@ -23,6 +23,24 @@
             "command": "docker build -t xiaoyao9184/watermark-anything:main -f ./docker/build@source/dockerfile ."
         },
         {
+            "label": "huggingface-cli: download models",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    // "HF_ENDPOINT": "https://hf-mirror.com",
+                    // "HF_HUB_ETAG_TIMEOUT": "1000",
+                    // "HF_HUB_DOWNLOAD_TIMEOUT": "1000"
+                }
+            },
+            "command": "huggingface-cli download --revision main --cache-dir ./cache/huggingface/hub xiaoyao9184/watermark-anything"
+        },
+        {
+            "label": "huggingface-cli: upload models",
+            "type": "shell",
+            "command": "huggingface-cli upload --repo-type model --revision main xiaoyao9184/watermark-anything ${workspaceFolder}/watermark-anything/checkpoints/checkpoint.pth",
+        },
+        {
             "label": "conda: jupyter run inference notebook",
             "type": "shell",
             "options": {
