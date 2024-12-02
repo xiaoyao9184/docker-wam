@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "debugpy: watermark-anything streamlit",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/watermark-anything",
+            "args": [
+                "run",
+                "${workspaceFolder}/streamlit/streamlit_app.py"
+            ],
+            "env": {
+                "STREAMLIT_SERVER_PORT": "8501"
+            },
+            "justMyCode": false
+        }
+    ]
+}
