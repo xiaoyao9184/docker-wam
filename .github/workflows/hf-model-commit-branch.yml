@@ -1,0 +1,73 @@
+
+name: HuggingFace Model Publish commit with branch
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - watermark-anything
+      - .github/workflows/hf-model-commit-branch.yml
+  workflow_dispatch:
+    inputs:
+      commit_id:
+        description: watermark-anything commit id(like 'main' '88e3ae5d')
+        required: true
+        default: main
+  schedule:
+    - cron: '0 0 1 */3 *'
+
+jobs:
+  download-and-push-hf-model:
+    name: Download Github Releases and push to HuggingFace
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        BRANCH_CHECKOUT:
+          - ${{ github.event.inputs.commit_id || 'main' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Checkout commit
+        run: |
+          cd watermark-anything
+          git checkout ${{ matrix.BRANCH_CHECKOUT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10.14'
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install pip dependencies
+        uses: BSFishy/pip-action@v1
+        with:
+          packages: |
+            wget==3.2
+
+      - name: Download models by auto load
+        working-directory: ./watermark-anything
+        run: python -m wget https://dl.fbaipublicfiles.com/watermark_anything/checkpoint.pth -o ./checkpoints/checkpoint.pth
+
+      - name: Install huggingface cli
+        uses: BSFishy/pip-action@v1
+        with:
+          packages: huggingface_hub[cli]
+          extra: --user
+
+      - name: Log in to Hugging Face CLI
+        run: huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+
+      - name: Upload models to Hugging Face Models
+        run: huggingface-cli upload --repo-type model --revision main ${{ secrets.HF_USERNAME }}/watermark-anything ./watermark-anything/checkpoints/checkpoint.pth
+
+      - name: Log out from Hugging Face CLI
+        if: always()
+        run: huggingface-cli logout
