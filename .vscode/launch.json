@@ -2,6 +2,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "debugpy: watermark-anything gradio",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${env:CONDA_PREFIX}/envs/watermark_anything/bin/gradio",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "${workspaceFolder}/gradio/gradio_app.py"
+            ],
+            "env": {
+                "APP_PATH": "${workspaceFolder}/watermark-anything"
+            },
+            "justMyCode": false
+        },
+        {
             "name": "debugpy: watermark-anything streamlit",
             "type": "debugpy",
             "request": "launch",
