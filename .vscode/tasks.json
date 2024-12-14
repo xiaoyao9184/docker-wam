@@ -2,6 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "docker: compose up.gradio@gpu",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/docker/up.gradio@gpu/"
+            },
+            "command": "docker compose -p watermark-anything up"
+        },
+        {
+            "label": "docker: compose up.gradio@cpu",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/docker/up.gradio@cpu/"
+            },
+            "command": "docker compose -p watermark-anything up"
+        },
+        {
             "label": "docker: compose up.streamlit@gpu",
             "type": "shell",
             "options": {
@@ -37,6 +53,20 @@
             "label": "docker: build main",
             "type": "shell",
             "command": "docker build -t xiaoyao9184/watermark-anything:main -f ./docker/build@source/dockerfile ."
+        },
+        {
+            "label": "conda: run watermark-anything gradio",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/gradio",
+                "env": {
+                    "APP_PATH": "${workspaceFolder}/watermark-anything",
+                }
+            },
+            "command": [
+                "conda run --no-capture-output -n watermark_anything python gradio_app.py"
+            ],
+            "problemMatcher": []
         },
         {
             "label": "conda: run watermark-anything streamlit",
