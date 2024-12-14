@@ -1,0 +1,18 @@
+
+
+services:
+  watermark-anything:
+    image: xiaoyao9184/watermark-anything:main
+    container_name: watermark-anything-gradio
+    working_dir: /workspace/gradio
+    command: gradio gradio_app.py
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./../../watermark-anything/checkpoints/checkpoint.pth:/app/checkpoints/checkpoint.pth
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
