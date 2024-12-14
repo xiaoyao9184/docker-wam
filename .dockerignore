@@ -3,5 +3,15 @@ watermark-anything/.github/
 watermark-anything/checkpoints/checkpoint.pth
 watermark-anything/outputs/
 watermark-anything/.gitignore
+
+gradio/.github/
+gradio/.vscode/
+gradio/.git
+gradio/.gitattributes
+gradio/.gitignore
+gradio/app.py
+gradio/README.md
+gradio/requirements.txt
+
 # Ignore generated files
 **/*.pyc

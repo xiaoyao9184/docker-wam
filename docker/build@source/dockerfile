@@ -25,15 +25,19 @@ COPY ./watermark-anything /app
 RUN pip3 install --no-cache-dir \
     streamlit==1.40.2 \
     streamlit-drawable-canvas==0.9.3 \
-    streamlit-keyup==0.2.4
+    streamlit-keyup==0.2.4 \
+    gradio==5.8.0
 
 COPY ./streamlit /workspace/streamlit
+COPY ./gradio /workspace/gradio
 
 EXPOSE 8888
 EXPOSE 8501
+EXPOSE 7860
 
 VOLUME /app/checkpoints
 
 ENV APP_PATH=/app
+ENV GRADIO_SERVER_NAME="0.0.0.0"
 
 CMD ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
