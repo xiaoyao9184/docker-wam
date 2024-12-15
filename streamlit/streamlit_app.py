@@ -276,7 +276,7 @@ if embedding_btn:
         img_pt = default_transform(img_pil).unsqueeze(0).to(device)
         # To ensure at least `proportion_masked %` of the width is randomly usable,
         # otherwise, it is easy to enter an infinite loop and fail to find a usable width.
-        mask_percentage = img_pil.height / img_pil.width * proportion_masked / wm_num
+        mask_percentage = img_pil.height / img_pil.width * proportion_masked / embedding_num
         wm_masks = create_random_mask(img_pt, num_masks=embedding_num, mask_percentage=mask_percentage)
     elif embedding_loc == "bounding" and bbox_list:
         wm_masks = torch.zeros((len(bbox_list), 1, img_pil.height, img_pil.width), dtype=torch.float32).to(device)
