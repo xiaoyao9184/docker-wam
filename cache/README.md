@@ -7,7 +7,7 @@ When using online mode, downloaded models will be cached in this folder.
 For [offline mode](https://huggingface.co/docs/transformers/main/installation#offline-mode) use, please download the models in advance and specify the model directory,
 such as the `surya_det3` model below.
 
-The folder structure for `./cache/huggingface/hub/models--xiaoyao9184--watermark-anything` is as follows.
+The folder structure for `./cache/huggingface/hub/models--facebook--watermark-anything` is as follows.
 
 ```
 .
@@ -15,13 +15,14 @@ The folder structure for `./cache/huggingface/hub/models--xiaoyao9184--watermark
 ├── refs
 │   └── main
 └── snapshots
-    └── ?
+    └── f39387cd46bf657e553aacd52807e4442690eab8
+        └── checkpoint.pth
 
 4 directories, 13 files
 ```
 
 It will use
-- `./cache/huggingface/hub/models--xiaoyao9184--watermark-anything/snapshots/?`
+- `./cache/huggingface/hub/models--facebook--watermark-anything/snapshots/?`
 
 For more details, refer to [up@cpu-offline/docker-compose.yml](./../docker/up@cpu-offline/docker-compose.yml).
 
@@ -39,5 +40,5 @@ pip install -U "huggingface_hub[cli]"
 download model
 
 ```bash
-huggingface-cli download xiaoyao9184/watermark-anything --repo-type model --revision main --cache-dir ./cache/huggingface/hub
+huggingface-cli download facebook/watermark-anything --repo-type model --revision main --cache-dir ./cache/huggingface/hub
 ```
