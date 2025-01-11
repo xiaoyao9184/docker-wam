@@ -13,5 +13,20 @@ gradio/app.py
 gradio/README.md
 gradio/requirements.txt
 
+label/__pycache__/
+label/.pytest_cache/
+label/test_images/
+label/.gitignore
+label/cache.db
+label/requirements_base.txt
+label/requirements_dev.txt
+label/requirements_text.txt
+label/requirements.py
+label/requirements.txt
+label/test_api.py
+
 # Ignore generated files
 **/*.pyc
+
+# Ignore generated files
+**/cache.db

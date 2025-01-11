@@ -5,29 +5,18 @@ if "APP_PATH" in os.environ:
     # fix sys.path for import
     sys.path.append(os.getcwd())
 
-import json
 import boto3
 import logging
-import re
-import string
-import random
 import os
 import numpy as np
-from PIL import Image
 import torch
 import torch.nn.functional as F
-from torchvision import transforms
+from PIL import Image
 from uuid import uuid4
 
-from watermark_anything.data.metrics import msg_predict_inference
 from notebooks.inference_utils import (
     load_model_from_checkpoint,
     default_transform,
-    unnormalize_img,
-    create_random_mask,
-    plot_outputs,
-    msg2str,
-    torch_to_np,
     multiwm_dbscan
 )
 
@@ -35,7 +24,7 @@ from typing import List, Dict, Optional
 from label_studio_converter import brush
 from label_studio_ml.model import LabelStudioMLBase
 from label_studio_ml.response import ModelResponse
-from label_studio_ml.utils import get_image_size, DATA_UNDEFINED_NAME
+from label_studio_ml.utils import DATA_UNDEFINED_NAME
 from label_studio_sdk._extensions.label_studio_tools.core.utils.io import get_local_path
 from botocore.exceptions import ClientError
 from urllib.parse import urlparse
@@ -135,7 +124,7 @@ class WAM(LabelStudioMLBase):
         from_name_brush, _, _ = self.get_first_tag_occurence('BrushLabels', 'Image', name_filter=lambda x: x == 'watermark_mask')
 
         labels = []
-        for idx, l in enumerate(self.label_interface.labels):
+        for l in self.label_interface.labels:
             if 'watermarked' in l.keys() and l['watermarked'].parent_name == 'watermark_mask':
                 labels.append(l)
         if len(labels) != 1:
@@ -156,7 +145,7 @@ class WAM(LabelStudioMLBase):
 
         # run detect
         img_pil = Image.open(image_path).convert("RGB")
-        det_img, pred, positions, centroids, centroids_pt = self.image_detect(img_pil)
+        det_img, _, positions, centroids, _ = self.image_detect(img_pil)
 
         if positions is None:
             return
