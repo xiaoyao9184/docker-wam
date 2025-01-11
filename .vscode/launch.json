@@ -2,6 +2,45 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "debugpy: watermark-anything label wsgi",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/label/_wsgi.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/label",
+            "args": [
+                "-d",
+                "-p", "9090"
+            ],
+            "env": {
+                // "LABEL_STUDIO_URL": "http://localhost:8080",
+                // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
+                "XDG_CACHE_HOME": "${workspaceFolder}/cache",
+                "HF_HUB_OFFLINE": "true",
+                "APP_PATH": "${workspaceFolder}/watermark-anything"
+            },
+            "justMyCode": false
+        },
+        {
+            "name": "debugpy: watermark-anything label test",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/label",
+            "args": [
+                "${workspaceFolder}/label/test_api.py"
+            ],
+            "env": {
+                // "LABEL_STUDIO_URL": "http://localhost:8080",
+                // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
+                "XDG_CACHE_HOME": "${workspaceFolder}/cache",
+                "HF_HUB_OFFLINE": "true",
+                "APP_PATH": "${workspaceFolder}/watermark-anything"
+            },
+            "justMyCode": false
+        },
+        {
             "name": "debugpy: watermark-anything gradio",
             "type": "debugpy",
             "request": "launch",
