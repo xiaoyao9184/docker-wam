@@ -2,6 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "docker: compose up.label@gpu",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/docker/up.label@gpu/"
+            },
+            "command": "docker compose -p watermark-anything up"
+        },
+        {
             "label": "docker: compose up.gradio@gpu",
             "type": "shell",
             "options": {
@@ -53,6 +61,44 @@
             "label": "docker: build main",
             "type": "shell",
             "command": "docker build -t xiaoyao9184/watermark-anything:main -f ./docker/build@source/dockerfile ."
+        },
+        {
+            "label": "conda: pytest label-studio-ml",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/",
+                "env": {
+                    // "LABEL_STUDIO_URL": "http://localhost:8080",
+                    // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
+                    // "HF_ENDPOINT": "https://hf-mirror.com",
+                    // "HF_HUB_ETAG_TIMEOUT": "1000",
+                    // "HF_HUB_DOWNLOAD_TIMEOUT": "1000",
+                    "XDG_CACHE_HOME": "${workspaceFolder}/cache"
+                }
+            },
+            "command": [
+                "conda run -n watermark_anything pytest ${workspaceFolder}/label/test_api.py"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "conda: label-studio-ml start",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/",
+                "env": {
+                    // "LABEL_STUDIO_URL": "http://localhost:8080",
+                    // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
+                    // "HF_ENDPOINT": "https://hf-mirror.com",
+                    // "HF_HUB_ETAG_TIMEOUT": "1000",
+                    // "HF_HUB_DOWNLOAD_TIMEOUT": "1000",
+                    "XDG_CACHE_HOME": "${workspaceFolder}/cache"
+                }
+            },
+            "command": [
+                "conda run --no-capture-output -n watermark_anything label-studio-ml start --root-dir ${workspaceFolder} label"
+            ],
+            "problemMatcher": []
         },
         {
             "label": "conda: run watermark-anything gradio",
