@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libglib2.0-0 \
     libxrender-dev \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip
@@ -26,18 +27,27 @@ RUN pip3 install --no-cache-dir \
     streamlit==1.40.2 \
     streamlit-drawable-canvas==0.9.3 \
     streamlit-keyup==0.2.4 \
-    gradio==5.8.0
+    gradio==5.8.0 \
+    gunicorn==22.0.0 \
+    git+https://github.com/HumanSignal/label-studio-ml-backend.git@master#egg=label-studio-ml \
+    boto3==1.35.91 \
+    label-studio-converter==0.0.59
 
 COPY ./streamlit /workspace/streamlit
 COPY ./gradio /workspace/gradio
+COPY ./label /workspace/label
 
 EXPOSE 8888
 EXPOSE 8501
 EXPOSE 7860
+EXPOSE 9090
 
 VOLUME /app/checkpoints
+VOLUME /workspace/label/.pytest_cache
+# VOLUME /workspace/label/cache.db
 
 ENV APP_PATH=/app
 ENV GRADIO_SERVER_NAME="0.0.0.0"
+ENV LABEL_STUDIO_URL=http://label-studio:8080
 
 CMD ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
