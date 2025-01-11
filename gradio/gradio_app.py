@@ -303,38 +303,67 @@ with gr.Blocks(title="Watermark Anything Demo") as demo:
                     embedding_img = gr.Image(label="Input Image", type="numpy")
 
                 with gr.Column():
+                    embedding_box = gr.AnnotatedImage(
+                        visible=False,
+                        label="ROI: Click on left 'Input Image'",
+                        color_map={
+                            "ROI of Watermark embedding": "#9987FF",
+                            "Click second point for ROI": "#f44336"}
+                    )
+
                     embedding_num = gr.Slider(1, 5, value=1, step=1, label="Number of Watermarks")
                     embedding_type = gr.Radio(["random", "input"], value="random", label="Type", info="Type of watermarks")
                     embedding_str = gr.Textbox(label="Watermark Text", visible=False, show_copy_button=True)
                     embedding_loc = gr.Radio(["random", "bounding"], value="random", label="Location", info="Location of watermarks")
-
-                    @gr.render(inputs=embedding_loc)
-                    def show_split(wm_loc):
-                        if wm_loc == "bounding":
-                            embedding_box = gr.AnnotatedImage(
-                                label="ROI",
-                                color_map={
-                                    "ROI of Watermark embedding": "#9987FF",
-                                    "Click second point for ROI": "#f44336"}
-                            )
-
-                            embedding_img.select(
-                                fn=get_select_coordinates,
-                                inputs=[embedding_img, embedding_num],
-                                outputs=embedding_box)
-                            embedding_box.select(
-                                fn=del_select_coordinates,
-                                inputs=embedding_box,
-                                outputs=embedding_box
-                            )
-                        else:
-                            embedding_img.select()
 
                     embedding_btn = gr.Button("Embed Watermark")
                     marked_msg = gr.JSON(label="Marked Messages")
             with gr.Row():
                 marked_image = gr.Image(label="Watermarked Image")
                 marked_mask = gr.Image(label="Position of the watermark")
+
+            embedding_img.select(
+                fn=get_select_coordinates,
+                inputs=[embedding_img, embedding_num],
+                outputs=embedding_box)
+            embedding_box.select(
+                fn=del_select_coordinates,
+                inputs=embedding_box,
+                outputs=embedding_box
+            )
+            
+            # The inability to dynamically render `AnnotatedImage` is because, 
+            # when placed inside `gr.Column()`, it prevents listeners from being added to controls outside the column.
+            # Dynamically adding a select listener will not change the cursor shape of the Image.
+            # So `render` cannot work properly in this scenario.
+            # 
+            # @gr.render(inputs=embedding_loc)
+            # def show_split(wm_loc):
+            #     if wm_loc == "bounding":
+            #         embedding_img.select(
+            #             fn=get_select_coordinates,
+            #             inputs=[embedding_img, embedding_num],
+            #             outputs=embedding_box)
+            #         embedding_box.select(
+            #             fn=del_select_coordinates,
+            #             inputs=embedding_box,
+            #             outputs=embedding_box
+            #         )
+            #     else:
+            #         embedding_img.select()
+            
+            def visible_box_image(img, wm_loc):
+                if wm_loc == "bounding":
+                    return gr.update(visible=True, value=(img,sections))
+                else:
+                    sections.clear()
+                    ROI_coordinates['clicks'] = 0
+                    return gr.update(visible=False, value=(img,sections))
+            embedding_loc.change(
+                fn=visible_box_image,
+                inputs=[embedding_img, embedding_loc],
+                outputs=[embedding_box]
+            )
 
             def visible_text_label(embedding_type, embedding_num):
                 if embedding_type == "input":
