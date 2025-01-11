@@ -5,14 +5,16 @@
             "name": "debugpy: watermark-anything gradio",
             "type": "debugpy",
             "request": "launch",
-            "program": "${env:CONDA_PREFIX}/envs/watermark_anything/bin/gradio",
+            "program": "${workspaceFolder}/gradio/gradio_run.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "args": [
                 "${workspaceFolder}/gradio/gradio_app.py"
             ],
             "env": {
-                "APP_PATH": "${workspaceFolder}/watermark-anything"
+                "APP_PATH": "${workspaceFolder}/watermark-anything",
+                "PYDEVD_DISABLE_FILE_VALIDATION": "1",
+                "XDG_CACHE_HOME": "${workspaceFolder}/cache",
             },
             "justMyCode": false
         },
