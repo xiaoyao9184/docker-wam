@@ -39,6 +39,10 @@ from notebooks.inference_utils import (
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# Seed 
+seed = 42
+torch.manual_seed(seed)
+
 # Proportion of the image to be watermarked (0.5 means 50% of the image).
 # This is used here to show the watermark localization property. In practice, you may want to use a predifined mask or the entire image.
 proportion_masked = 0.5
@@ -99,7 +103,6 @@ def image_embed(img_pil: Image.Image, wm_msgs: torch.Tensor, wm_masks: torch.Ten
         outputs = wam.embed(img_pt, wm_msg)
         multi_wm_img = outputs['imgs_w'] * mask + multi_wm_img * (1 - mask)  # [1, 3, H, W]
 
-    torch.cuda.empty_cache()
     return img_pt, multi_wm_img, wm_masks.sum(0)
 
 def centroid_to_hex(centroid) -> str:
@@ -159,8 +162,6 @@ if img_pil is None:
 detecting_btn = st.sidebar.button("Run detect")
 # Run detect
 if detecting_btn:
-    torch.cuda.empty_cache()
-
     det_img, pred, positions, centroids, centroids_pt = image_detect(img_pil)
 
     with col1:
@@ -254,8 +255,6 @@ else:
 embedding_btn = st.sidebar.button("Run embed")
 # Run embed
 if embedding_btn:
-    torch.cuda.empty_cache()
-
     wm_msgs = []
     if embedding_type == "random":
         chars = '-'.join(''.join(random.choice(string.hexdigits) for _ in range(4)) for _ in range(embedding_num * 2))
@@ -276,7 +275,7 @@ if embedding_btn:
         img_pt = default_transform(img_pil).unsqueeze(0).to(device)
         # To ensure at least `proportion_masked %` of the width is randomly usable,
         # otherwise, it is easy to enter an infinite loop and fail to find a usable width.
-        mask_percentage = img_pil.height / img_pil.width * proportion_masked / embedding_num
+        mask_percentage = min(img_pil.height, img_pil.width) / max(img_pil.height, img_pil.width) * proportion_masked / embedding_num
         wm_masks = create_random_mask(img_pt, num_masks=embedding_num, mask_percentage=mask_percentage)
     elif embedding_loc == "bounding" and bbox_list:
         wm_masks = torch.zeros((len(bbox_list), 1, img_pil.height, img_pil.width), dtype=torch.float32).to(device)

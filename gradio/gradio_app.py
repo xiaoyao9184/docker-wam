@@ -33,6 +33,10 @@ from notebooks.inference_utils import (
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# Seed 
+seed = 42
+torch.manual_seed(seed)
+
 # Constants
 proportion_masked = 0.5  # Proportion of image to be watermarked
 epsilon = 1  # min distance between decoded messages in a cluster
@@ -88,7 +92,6 @@ def image_embed(img_pil: Image.Image, wm_msgs: torch.Tensor, wm_masks: torch.Ten
         outputs = wam.embed(img_pt, wm_msg)
         multi_wm_img = outputs['imgs_w'] * mask + multi_wm_img * (1 - mask)
 
-    torch.cuda.empty_cache()
     return img_pt, multi_wm_img, wm_masks.sum(0)
 
 def create_bounding_mask(img_size, boxes):
@@ -205,7 +208,7 @@ def embed_watermark(image, wm_num, wm_type, wm_str, wm_loc):
         img_pt = default_transform(img_pil).unsqueeze(0).to(device)
         # To ensure at least `proportion_masked %` of the width is randomly usable,
         # otherwise, it is easy to enter an infinite loop and fail to find a usable width.
-        mask_percentage = img_pil.height / img_pil.width * proportion_masked / wm_num
+        mask_percentage = min(img_pil.height, img_pil.width) / max(img_pil.height, img_pil.width) * proportion_masked / wm_num
         wm_masks = create_random_mask(img_pt, num_masks=wm_num, mask_percentage=mask_percentage)
     elif wm_loc == "bounding" and sections:
         wm_masks = torch.zeros((len(sections), 1, img_pil.height, img_pil.width), dtype=torch.float32).to(device)
