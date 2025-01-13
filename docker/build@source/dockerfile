@@ -24,6 +24,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY ./watermark-anything /app
 
 RUN pip3 install --no-cache-dir \
+    wrapt-timeout-decorator==1.5.1 \
     streamlit==1.40.2 \
     streamlit-drawable-canvas==0.9.3 \
     streamlit-keyup==0.2.4 \
