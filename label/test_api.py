@@ -74,7 +74,6 @@ def test_predict(client, model_dir_env):
     assert response.status_code == 200
     response = json.loads(response.data)
     expected_texts = {
-        '1989-0604',
         '2019-1230'
     }
     texts_response = set()

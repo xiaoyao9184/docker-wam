@@ -14,6 +14,7 @@ import torch.nn.functional as F
 from PIL import Image
 from uuid import uuid4
 
+from watermark_anything.data.metrics import msg_predict_inference
 from notebooks.inference_utils import (
     load_model_from_checkpoint,
     default_transform,
@@ -97,20 +98,14 @@ class WAM(LabelStudioMLBase):
         # Detect the watermark in the multi-watermarked image
         preds = wam.detect(img_pt)["preds"]  # [1, 33, 256, 256]
         mask_preds = F.sigmoid(preds[:, 0, :, :])  # [1, 256, 256], predicted mask
-        mask_preds_res = F.interpolate(mask_preds.unsqueeze(1), size=(img_pt.shape[-2], img_pt.shape[-1]), mode="bilinear", align_corners=False)  # [1, 1, H, W]
         bit_preds = preds[:, 1:, :, :]  # [1, 32, 256, 256], predicted bits
 
-        # positions has the cluster number at each pixel. can be upsaled back to the original size.
-        try:
-            centroids, positions = multiwm_dbscan(bit_preds, mask_preds, epsilon=epsilon, min_samples=min_samples)
-            centroids_pt = torch.stack(list(centroids.values()))
-        except (UnboundLocalError) as e:
-            print(f"Error while detecting watermark: {e}")
-            positions = None
-            centroids = None
-            centroids_pt = None
+        mask_preds_res = F.interpolate(mask_preds.unsqueeze(1), size=(img_pt.shape[-2], img_pt.shape[-1]), mode="bilinear", align_corners=False)  # [1, 1, H, W]
+        message_pred_inf = msg_predict_inference(bit_preds, mask_preds).cpu().float()  # [1, 32]
+        if message_pred_inf.sum() == 0:
+            message_pred_inf = None
 
-        return img_pt, (mask_preds_res>0.5).float(), positions, centroids, centroids_pt
+        return img_pt, (mask_preds_res>0.5).float(), message_pred_inf
 
     def centroid_to_hex(self, centroid):
         binary_int = 0
@@ -145,65 +140,59 @@ class WAM(LabelStudioMLBase):
 
         # run detect
         img_pil = Image.open(image_path).convert("RGB")
-        det_img, _, positions, centroids, _ = self.image_detect(img_pil)
-
-        if positions is None:
-            return
+        _, mask_pred, message_pred = self.image_detect(img_pil)
 
         result = []
         all_scores = []
         img_width, img_height = img_pil.width, img_pil.height
 
-        for key in centroids.keys():
-            id_gen = str(uuid4())[:4]
+        id_gen = str(uuid4())[:4]
 
-            # no score just allway 1
-            score = 1
+        # no score just allway 1
+        score = 1
 
-            # mask 2 rle
-            pred_res = F.interpolate(positions.unsqueeze(0).unsqueeze(0), size=det_img.shape[-2:], mode="nearest")  # [1, 1, H, W]
-            mask_bool = pred_res == key
-            mask_int = mask_bool.squeeze().squeeze().numpy().astype(np.uint8)
-            rle = brush.mask2rle(mask_int * 255)
+        # mask 2 rle
+        mask_int = mask_pred.squeeze().cpu().numpy().astype(np.uint8)
+        rle = brush.mask2rle(mask_int * 255)
 
-            centroid_hex = self.centroid_to_hex(centroids[key])
-            centroid_hex_array = "-".join([centroid_hex[i:i+4] for i in range(0, len(centroid_hex), 4)])
+        centroid_hex = self.centroid_to_hex(message_pred[0])
+        centroid_hex_array = "-".join([centroid_hex[i:i+4] for i in range(0, len(centroid_hex), 4)])
 
-            # must add one for the Brush
-            result.append({
-                'id': id_gen,
-                'from_name': from_name_brush,
-                'to_name': to_name,
-                'original_width': img_width,
-                'original_height': img_height,
-                'image_rotation': 0,
-                'value': {
-                    "format": "rle",
-                    "rle": rle,
-                    'brushlabels': [label]
-                },
-                'score': score,
-                'type': 'brushlabels',
-                'readonly': False
-            })
+        # must add one for the Brush
+        result.append({
+            'id': id_gen,
+            'from_name': from_name_brush,
+            'to_name': to_name,
+            'original_width': img_width,
+            'original_height': img_height,
+            'image_rotation': 0,
+            'value': {
+                "format": "rle",
+                "rle": rle,
+                'brushlabels': [label]
+            },
+            'score': score,
+            'type': 'brushlabels',
+            'readonly': False
+        })
 
-            # and one for the TextArea
-            result.append({
-                'id': id_gen,
-                'from_name': from_name_area,
-                'to_name': to_name,
-                'original_width': img_width,
-                'original_height': img_height,
-                'image_rotation': 0,
-                'value': {
-                    "text": [centroid_hex_array],
-                    'brushlabels': [label]
-                },
-                'score': score,
-                'type': 'textarea',
-                'origin': 'manual'
-            })
-            all_scores.append(score)
+        # and one for the TextArea
+        result.append({
+            'id': id_gen,
+            'from_name': from_name_area,
+            'to_name': to_name,
+            'original_width': img_width,
+            'original_height': img_height,
+            'image_rotation': 0,
+            'value': {
+                "text": [centroid_hex_array],
+                'brushlabels': [label]
+            },
+            'score': score,
+            'type': 'textarea',
+            'origin': 'manual'
+        })
+        all_scores.append(score)
         return {
             'result': result,
             'score': sum(all_scores) / max(len(all_scores), 1),
