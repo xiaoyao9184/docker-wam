@@ -32,13 +32,15 @@ def install_model():
 install_src()
 install_model()
 
-# change directory
-print(f"Current Directory: {os.getcwd()}")
-os.chdir(LOCAL_PATH)
-print(f"New Directory: {os.getcwd()}")
-
 # fix sys.path for import
-sys.path.append(os.getcwd())
+print(f"LOCAL_PATH: {os.path.abspath(LOCAL_PATH)}")
+os.environ["APP_PATH"] = os.path.abspath(LOCAL_PATH)
 
 # run gradio
-import gradio_app
+import re
+import sys
+from gradio.cli import cli
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.argv.append(re.sub(r'app\.py$', 'gradio_app.py', sys.argv[0]))
+    sys.exit(cli())
