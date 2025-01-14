@@ -7,6 +7,20 @@ on:
       - 'main'
     paths:
       - watermark-anything
+      - streamlit/**
+      - gradio/**
+      - '!gradio/app.py'
+      - '!gradio/gradio_run.py'
+      - '!gradio/requirements.txt'
+      - label/**
+      - '!label/test_images/**'
+      - '!label/.gitignore'
+      - '!label/requirements_base.txt'
+      - '!label/requirements_dev.txt'
+      - '!label/requirements_text.txt'
+      - '!label/requirements.py'
+      - '!label/requirements.txt'
+      - '!label/test_api.py'
       - docker/build@source/dockerfile
       - .github/workflows/docker-image-tag-commit.yml
   workflow_dispatch:
