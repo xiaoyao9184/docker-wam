@@ -1,9 +1,13 @@
 import os
 import sys
 if "APP_PATH" in os.environ:
-    os.chdir(os.environ["APP_PATH"])
     # fix sys.path for import
-    sys.path.append(os.getcwd())
+    os.chdir(os.environ["APP_PATH"])
+    if os.getcwd() not in sys.path:
+        sys.path.append(os.getcwd())
+    
+# remove duplicate gradio_app path from sys.path
+sys.path = list(dict.fromkeys(sys.path))
 
 # here the subprocess stops loading, because __name__ is NOT '__main__'
 # gradio will reload
@@ -60,8 +64,9 @@ if '__main__' == __name__:
         # Load the model from the specified checkpoint
         exp_dir = "checkpoints"
         json_path = os.path.join(exp_dir, "params.json")
-        ckpt_path = os.path.join(exp_dir, 'checkpoint.pth')
-        wam = load_model_from_checkpoint(json_path, ckpt_path).to(device).eval()
+        ckpt_path = os.environ.get("CHECKPOINT_MODEL_PATH", exp_dir)
+        ckpt_file = os.path.join(ckpt_path, 'checkpoint.pth')
+        wam = load_model_from_checkpoint(json_path, ckpt_file).to(device).eval()
         return wam
 
     def image_detect(img_pil: Image.Image, scan_mult: bool=False, timeout_seconds: int=5) -> (torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor):

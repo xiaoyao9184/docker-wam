@@ -1,9 +1,10 @@
 import os
 import sys
 if "APP_PATH" in os.environ:
-    os.chdir(os.environ["APP_PATH"])
     # fix sys.path for import
-    sys.path.append(os.getcwd())
+    os.chdir(os.environ["APP_PATH"])
+    if os.getcwd() not in sys.path:
+        sys.path.append(os.getcwd())
 
 import boto3
 import logging
@@ -17,8 +18,7 @@ from uuid import uuid4
 from watermark_anything.data.metrics import msg_predict_inference
 from notebooks.inference_utils import (
     load_model_from_checkpoint,
-    default_transform,
-    multiwm_dbscan
+    default_transform
 )
 
 from typing import List, Dict, Optional
@@ -45,8 +45,9 @@ def load_wam():
     # Load the model from the specified checkpoint
     exp_dir = "checkpoints"
     json_path = os.path.join(exp_dir, "params.json")
-    ckpt_path = os.path.join(exp_dir, 'checkpoint.pth')
-    wam = load_model_from_checkpoint(json_path, ckpt_path).to(device).eval()
+    ckpt_path = os.environ.get("CHECKPOINT_MODEL_PATH", exp_dir)
+    ckpt_file = os.path.join(ckpt_path, 'checkpoint.pth')
+    wam = load_model_from_checkpoint(json_path, ckpt_file).to(device).eval()
     return wam
 
 # Load the model

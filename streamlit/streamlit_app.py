@@ -1,9 +1,16 @@
 import os
 import sys
 if "APP_PATH" in os.environ:
-    os.chdir(os.environ["APP_PATH"])
+    # fix streamlit_app path not in sys.path when use subprocess
+    if '__main__' != __name__:
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        if current_path not in sys.path:
+            print(f"add {current_path} into sys.path")
+            sys.path.append(current_path)
     # fix sys.path for import
-    sys.path.append(os.getcwd())
+    os.chdir(os.environ["APP_PATH"])
+    if os.getcwd() not in sys.path:
+        sys.path.append(os.getcwd())
 
 # here the subprocess stops loading, because __name__ is NOT '__main__'
 # streamlit will reload
@@ -68,8 +75,9 @@ if '__main__' == __name__:
         # Load the model from the specified checkpoint
         exp_dir = "checkpoints"
         json_path = os.path.join(exp_dir, "params.json")
-        ckpt_path = os.path.join(exp_dir, 'checkpoint.pth')
-        wam = load_model_from_checkpoint(json_path, ckpt_path).to(device).eval()
+        ckpt_path = os.environ.get("CHECKPOINT_MODEL_PATH", exp_dir)
+        ckpt_file = os.path.join(ckpt_path, 'checkpoint.pth')
+        wam = load_model_from_checkpoint(json_path, ckpt_file).to(device).eval()
         return wam
 
 

@@ -63,17 +63,13 @@
             "command": "docker build -t xiaoyao9184/watermark-anything:main -f ./docker/build@source/dockerfile ."
         },
         {
-            "label": "conda: pytest label-studio-ml",
+            "label": "conda: label-studio-ml pytest",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/",
                 "env": {
-                    // "LABEL_STUDIO_URL": "http://localhost:8080",
-                    // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
-                    // "HF_ENDPOINT": "https://hf-mirror.com",
-                    // "HF_HUB_ETAG_TIMEOUT": "1000",
-                    // "HF_HUB_DOWNLOAD_TIMEOUT": "1000",
-                    "XDG_CACHE_HOME": "${workspaceFolder}/cache"
+                    "APP_PATH": "${workspaceFolder}/watermark-anything",
+                    "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
                 }
             },
             "command": [
@@ -85,14 +81,12 @@
             "label": "conda: label-studio-ml start",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/",
+                "cwd": "${workspaceFolder}",
                 "env": {
-                    // "LABEL_STUDIO_URL": "http://localhost:8080",
-                    // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
-                    // "HF_ENDPOINT": "https://hf-mirror.com",
-                    // "HF_HUB_ETAG_TIMEOUT": "1000",
-                    // "HF_HUB_DOWNLOAD_TIMEOUT": "1000",
-                    "XDG_CACHE_HOME": "${workspaceFolder}/cache"
+                    "LABEL_STUDIO_URL": "http://localhost:8080",
+                    "LABEL_STUDIO_API_KEY": "label-token",
+                    "APP_PATH": "${workspaceFolder}/watermark-anything",
+                    "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
                 }
             },
             "command": [
@@ -101,31 +95,33 @@
             "problemMatcher": []
         },
         {
-            "label": "conda: run watermark-anything gradio",
+            "label": "conda: gradio python",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/gradio",
+                "cwd": "${workspaceFolder}",
                 "env": {
                     "APP_PATH": "${workspaceFolder}/watermark-anything",
+                    "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
                 }
             },
             "command": [
-                "conda run --no-capture-output -n watermark_anything python gradio_app.py"
+                "conda run --no-capture-output -n watermark_anything python gradio/gradio_app.py"
             ],
             "problemMatcher": []
         },
         {
-            "label": "conda: run watermark-anything streamlit",
+            "label": "conda: streamlit run",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/streamlit",
+                "cwd": "${workspaceFolder}",
                 "env": {
                     "STREAMLIT_SERVER_PORT": "8501",
-                    "APP_PATH": "${workspaceFolder}/watermark-anything"
+                    "APP_PATH": "${workspaceFolder}/watermark-anything",
+                    "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
                 }
             },
             "command": [
-                "conda run --no-capture-output -n watermark_anything streamlit run streamlit_app.py"
+                "conda run --no-capture-output -n watermark_anything streamlit run streamlit/streamlit_app.py"
             ],
             "problemMatcher": []
         },
@@ -140,13 +136,29 @@
                     // "HF_HUB_DOWNLOAD_TIMEOUT": "1000"
                 }
             },
-            "command": "huggingface-cli download --revision main --cache-dir ./cache/huggingface/hub --local-dir ./watermark-anything/checkpoints facebook/watermark-anything checkpoint.pth"
+            "command": "huggingface-cli download --revision main --cache-dir ./cache/huggingface/hub facebook/watermark-anything"
         },
         // no need, use facebook/watermark-anything
         // {
-        //     "label": "huggingface-cli: upload models",
+        //     "label": "huggingface-cli: download wam_coco model",
         //     "type": "shell",
-        //     "command": "huggingface-cli upload --repo-type model --revision main xiaoyao9184/watermark-anything ${workspaceFolder}/watermark-anything/checkpoints/checkpoint.pth",
+        //     "options": {
+        //         "cwd": "${workspaceFolder}",
+        //         "env": {
+        //             // "HF_ENDPOINT": "https://hf-mirror.com",
+        //             // "HF_HUB_ETAG_TIMEOUT": "1000",
+        //             // "HF_HUB_DOWNLOAD_TIMEOUT": "1000"
+        //         }
+        //     },
+        //     "command": "huggingface-cli download --revision main --cache-dir ./cache/huggingface/hub --local-dir ./watermark-anything/checkpoints xiaoyao9184/watermark-anything checkpoint.pth"
+        // },
+        // {
+        //     "label": "huggingface-cli: upload wam_coco model",
+        //     "type": "shell",
+        //     "command": [
+        //         "cp ${workspaceFolder}/watermark-anything/checkpoints/wam_coco.pth ./checkpoints/checkpoint.pth",
+        //         "&& huggingface-cli upload --repo-type model --revision main xiaoyao9184/watermark-anything ${workspaceFolder}/watermark-anything/checkpoints/checkpoint.pth"
+        //     ]
         // },
         {
             "label": "conda: jupyter run inference notebook",
@@ -160,25 +172,24 @@
             "problemMatcher": []
         },
         {
-            "label": "conda: wget download wam_mit models checkpoint",
+            "label": "conda: wget download wam_mit checkpoint",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/watermark-anything"
             },
             "command": [
-                "conda run --no-capture-output -n watermark_anything python -m wget https://dl.fbaipublicfiles.com/watermark_anything/wam_mit.pth -o ./checkpoints/wam_mit.pth",
-                "&& mv ./checkpoints/wam_mit.pth ./checkpoints/checkpoint.pth"
+                "conda run --no-capture-output -n watermark_anything python -m wget https://dl.fbaipublicfiles.com/watermark_anything/wam_mit.pth -o ./checkpoints/wam_mit.pth"
+                
             ]
         },
         {
-            "label": "conda: wget download wam_coco models checkpoint",
+            "label": "conda: wget download wam_coco checkpoint",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/watermark-anything"
             },
             "command": [
-                "conda run --no-capture-output -n watermark_anything python -m wget https://dl.fbaipublicfiles.com/watermark_anything/wam_coco.pth -o ./checkpoints/wam_coco.pth",
-                "&& mv ./checkpoints/wam_coco.pth ./checkpoints/checkpoint.pth"
+                "conda run --no-capture-output -n watermark_anything python -m wget https://dl.fbaipublicfiles.com/watermark_anything/wam_coco.pth -o ./checkpoints/wam_coco.pth"
             ]
         },
         {

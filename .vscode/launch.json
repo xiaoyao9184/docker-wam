@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "debugpy: watermark-anything label wsgi",
+            "name": "debugpy: label wsgi",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/label/_wsgi.py",
@@ -13,16 +13,15 @@
                 "-p", "9090"
             ],
             "env": {
-                // "LABEL_STUDIO_URL": "http://localhost:8080",
-                // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
-                "XDG_CACHE_HOME": "${workspaceFolder}/cache",
-                "HF_HUB_OFFLINE": "true",
-                "APP_PATH": "${workspaceFolder}/watermark-anything"
+                "LABEL_STUDIO_URL": "http://localhost:8080",
+                "LABEL_STUDIO_API_KEY": "label-token",
+                "APP_PATH": "${workspaceFolder}/watermark-anything",
+                "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
             },
             "justMyCode": false
         },
         {
-            "name": "debugpy: watermark-anything label test",
+            "name": "debugpy: label test",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
@@ -32,16 +31,13 @@
                 "${workspaceFolder}/label/test_api.py"
             ],
             "env": {
-                // "LABEL_STUDIO_URL": "http://localhost:8080",
-                // "LABEL_STUDIO_API_KEY": "<your-label-studio-api-key>",
-                "XDG_CACHE_HOME": "${workspaceFolder}/cache",
-                "HF_HUB_OFFLINE": "true",
-                "APP_PATH": "${workspaceFolder}/watermark-anything"
+                "APP_PATH": "${workspaceFolder}/watermark-anything",
+                "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
             },
             "justMyCode": false
         },
         {
-            "name": "debugpy: watermark-anything gradio",
+            "name": "debugpy: gradio python",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/gradio/gradio_run.py",
@@ -52,24 +48,25 @@
             ],
             "env": {
                 "APP_PATH": "${workspaceFolder}/watermark-anything",
-                "PYDEVD_DISABLE_FILE_VALIDATION": "1",
-                "XDG_CACHE_HOME": "${workspaceFolder}/cache",
+                "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
             },
             "justMyCode": false
         },
         {
-            "name": "debugpy: watermark-anything streamlit",
+            "name": "debugpy: streamlit run",
             "type": "debugpy",
             "request": "launch",
             "module": "streamlit",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/watermark-anything",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "run",
                 "${workspaceFolder}/streamlit/streamlit_app.py"
             ],
             "env": {
-                "STREAMLIT_SERVER_PORT": "8501"
+                "STREAMLIT_SERVER_PORT": "8501",
+                "APP_PATH": "${workspaceFolder}/watermark-anything",
+                "CHECKPOINT_MODEL_PATH": "${workspaceFolder}/cache/huggingface/hub/models--facebook--watermark-anything/snapshots/f39387cd46bf657e553aacd52807e4442690eab8"
             },
             "justMyCode": false
         }
