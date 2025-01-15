@@ -5,9 +5,15 @@ if "APP_PATH" in os.environ:
     os.chdir(os.environ["APP_PATH"])
     if os.getcwd() not in sys.path:
         sys.path.append(os.getcwd())
-    
+
 # remove duplicate gradio_app path from sys.path
 sys.path = list(dict.fromkeys(sys.path))
+
+# remove gradio reload env if in huggingface space
+if "SPACE_ID" in os.environ:
+    for key in ["GRADIO_WATCH_DIRS", "GRADIO_WATCH_MODULE_NAME", "GRADIO_WATCH_DEMO_NAME", "GRADIO_WATCH_DEMO_PATH"]:
+        if key in os.environ:
+            del os.environ[key]
 
 # here the subprocess stops loading, because __name__ is NOT '__main__'
 # gradio will reload

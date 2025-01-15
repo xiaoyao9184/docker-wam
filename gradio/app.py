@@ -36,7 +36,9 @@ install_model()
 print(f"LOCAL_PATH: {os.path.abspath(LOCAL_PATH)}")
 os.environ["APP_PATH"] = os.path.abspath(LOCAL_PATH)
 
-# run gradio
+# run gradio in subprocess in reloaded mode
+# huggingface space issue: https://github.com/gradio-app/gradio/issues/10048
+# need disable reload for huggingface space
 import re
 import sys
 from gradio.cli import cli
