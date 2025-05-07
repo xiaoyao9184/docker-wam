@@ -137,6 +137,21 @@ if '__main__' == __name__:
     wam = load_wam()
 
     def detect_watermark(image, multi, timeout):
+        """
+        Detects watermark(s) in the given image.
+
+        Args:
+            image (Union[PIL.Image.Image, str]): Input image, either a PIL Image object or a URL pointing to the image.
+            multi (bool): If True, enables detection of multiple watermarks in the image.
+            timeout (float): Timeout in seconds for image loading or processing; used to handle unresponsive or invalid images.
+
+        Returns:
+            tuple: A 4-element tuple containing:
+                - dict: An image dict of the predicted watermark positions.
+                - dict: An image dict of watermark clusters.
+                - Union[str, float, bool, list, dict]: Metadata or messages related to the detection.
+                - str: A markdown string summarizing the detection result (e.g., confidence level).
+        """
         if image is None:
             return None, None, None, {"status": "error", "messages": [], "error": "No image provided"}
 
@@ -198,6 +213,26 @@ if '__main__' == __name__:
         return pred_mask, cluster_viz, message_json, "\n".join(color_md)
 
     def embed_watermark(image, wm_num, wm_type, wm_str, wm_loc):
+        """
+        Embeds one or more watermarks into the input image.
+
+        Args:
+            image (Union[PIL.Image.Image, str]): The input image, either as a PIL Image object or a URL string.
+            wm_num (float): The number of watermarks to embed.
+            wm_type (Literal['random', 'input']): The type of watermark. 
+                - 'random': Use randomly generated watermark content.
+                - 'input': Use the content from `wm_str` as the watermark.
+            wm_str (str): The text content of the watermark when `wm_type='input'`.
+            wm_loc (Literal['random', 'bounding']): The placement mode of the watermark.
+                - 'random': Randomly place the watermark(s).
+                - 'bounding': Place within a bounding box or defined area.
+
+        Returns:
+            tuple: A 3-element tuple containing:
+                - dict: Watermarked image output (shown in "Watermarked Image" component).
+                - dict: Image showing the watermark position (shown in "Position of the watermark").
+                - Union[str, float, bool, list, dict]: Metadata or message related to the embedding process (shown in "Marked Messages").
+        """
         if image is None:
             return None, None, {
                 "status": "failure",
@@ -327,6 +362,7 @@ if '__main__' == __name__:
     with gr.Blocks(title="Watermark Anything Demo") as demo:
         gr.Markdown("""
         # Watermark Anything Demo
+        ![](https://badge.mcpx.dev?type=server 'MCP Server')
         This app demonstrates watermark detection and embedding using the Watermark Anything model.
         Find the project [here](https://github.com/facebookresearch/watermark-anything).
         """)
@@ -482,4 +518,4 @@ if '__main__' == __name__:
                 )
 
     if __name__ == '__main__':
-        demo.launch(server_name="0.0.0.0", server_port=7860)
+        demo.launch(server_name="0.0.0.0", server_port=7860, mcp_server=True, ssr_mode=False)
