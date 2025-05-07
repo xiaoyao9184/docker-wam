@@ -302,7 +302,8 @@ if '__main__' == __name__:
             st.image(pred_mask, caption="Predicted watermark position", use_container_width=True)
 
         with col3:
-            st.image(cluster_viz, caption="clusters", use_container_width=True)
+            if cluster_viz is not None:
+                st.image(cluster_viz, caption="clusters", use_container_width=True)
 
         with col0:
             color_md = []
