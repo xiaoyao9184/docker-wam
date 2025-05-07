@@ -360,11 +360,13 @@ if '__main__' == __name__:
                 embedding_img.select(
                     fn=get_select_coordinates,
                     inputs=[embedding_img, embedding_num],
-                    outputs=embedding_box)
+                    outputs=embedding_box,
+                    api_name=False)
                 embedding_box.select(
                     fn=del_select_coordinates,
                     inputs=embedding_box,
-                    outputs=embedding_box
+                    outputs=embedding_box,
+                    api_name=False
                 )
 
                 # The inability to dynamically render `AnnotatedImage` is because,
@@ -397,7 +399,8 @@ if '__main__' == __name__:
                 embedding_loc.change(
                     fn=visible_box_image,
                     inputs=[embedding_img, embedding_loc],
-                    outputs=[embedding_box]
+                    outputs=[embedding_box],
+                    api_name=False
                 )
 
                 def visible_text_label(embedding_type, embedding_num):
@@ -418,17 +421,20 @@ if '__main__' == __name__:
                 embedding_num.change(
                     fn=visible_text_label,
                     inputs=[embedding_type, embedding_num],
-                    outputs=[embedding_str]
+                    outputs=[embedding_str],
+                    api_name=False
                 )
                 embedding_type.change(
                     fn=visible_text_label,
                     inputs=[embedding_type, embedding_num],
-                    outputs=[embedding_str]
+                    outputs=[embedding_str],
+                    api_name=False
                 )
                 embedding_str.change(
                     fn=check_embedding_str,
                     inputs=[embedding_str, embedding_num],
-                    outputs=[embedding_btn]
+                    outputs=[embedding_btn],
+                    api_name=False
                 )
 
                 embedding_btn.click(
@@ -460,19 +466,20 @@ if '__main__' == __name__:
                 detecting_img.change(
                     fn=lambda x: gr.update(value=False),
                     inputs=detecting_img,
-                    outputs=multi_ckb
+                    outputs=multi_ckb,
+                    api_name=False
                 )
                 multi_ckb.change(
                     fn=lambda x: gr.update(visible=x),
                     inputs=multi_ckb,
-                    outputs=timeout_sli
+                    outputs=timeout_sli,
+                    api_name=False
                 )
                 detecting_btn.click(
                     fn=detect_watermark,
                     inputs=[detecting_img, multi_ckb, timeout_sli],
                     outputs=[predicted_mask, predicted_cluster, predicted_messages, color_cluster]
                 )
-
 
     if __name__ == '__main__':
         demo.launch(server_name="0.0.0.0", server_port=7860)
