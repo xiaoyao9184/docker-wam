@@ -5,7 +5,7 @@ import subprocess
 from huggingface_hub import hf_hub_download
 
 REPO_URL = "https://github.com/facebookresearch/watermark-anything.git"
-REPO_BRANCH = '45d56c2b61f2bc73caeafc90e14df33ad50b238c'
+REPO_BRANCH = 'bbec07bca82a416e5a6ff9d75a295cae5c166aaf'
 LOCAL_PATH = "./watermark-anything"
 MODEL_ID = "facebook/watermark-anything"
 
