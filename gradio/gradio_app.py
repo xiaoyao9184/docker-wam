@@ -20,6 +20,8 @@ if "SPACE_ID" in os.environ:
 if '__main__' == __name__:
 
     import gradio as gr
+    import requests
+    from contextlib import suppress
 
     import os
     import re
@@ -152,6 +154,10 @@ if '__main__' == __name__:
                 - Union[str, float, bool, list, dict]: Metadata or messages related to the detection.
                 - str: A markdown string summarizing the detection result (e.g., confidence level).
         """
+        # update counter
+        with suppress(Exception):
+            requests.get("https://counterapi.com/api/xiaoyao9184.github.com/view/docker-wam")
+
         if image is None:
             return None, None, None, {"status": "error", "messages": [], "error": "No image provided"}
 
@@ -233,6 +239,10 @@ if '__main__' == __name__:
                 - dict: Image showing the watermark position (shown in "Position of the watermark").
                 - Union[str, float, bool, list, dict]: Metadata or message related to the embedding process (shown in "Marked Messages").
         """
+        # update counter
+        with suppress(Exception):
+            requests.get("https://counterapi.com/api/xiaoyao9184.github.com/view/docker-wam")
+
         if image is None:
             return None, None, {
                 "status": "failure",
@@ -364,7 +374,10 @@ if '__main__' == __name__:
         # Watermark Anything Demo
         ![](https://badge.mcpx.dev?type=server 'MCP Server')
         This app demonstrates watermark detection and embedding using the Watermark Anything model.
-        Find the project [here](https://github.com/facebookresearch/watermark-anything).
+        
+        Find the original project [here](https://github.com/facebookresearch/watermark-anything).
+        Or this project [here](https://github.com/xiaoyao9184/docker-wam).
+        See the [README](./blob/main/README.md) for Spaces's metadata.
         """)
 
         with gr.Tabs():
