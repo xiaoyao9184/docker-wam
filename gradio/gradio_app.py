@@ -1,5 +1,7 @@
 import os
 import sys
+import git
+
 if "APP_PATH" in os.environ:
     # fix sys.path for import
     os.chdir(os.environ["APP_PATH"])
@@ -14,6 +16,17 @@ if "SPACE_ID" in os.environ:
     for key in ["GRADIO_WATCH_DIRS", "GRADIO_WATCH_MODULE_NAME", "GRADIO_WATCH_DEMO_NAME", "GRADIO_WATCH_DEMO_PATH"]:
         if key in os.environ:
             del os.environ[key]
+
+def get_app_git_commit():
+    app_path = os.environ.get("APP_PATH")
+    if not app_path:
+        return None
+    try:
+        repo = git.Repo(app_path, search_parent_directories=False)
+        hexsha = repo.head.commit.hexsha
+        return hexsha
+    except (git.exc.InvalidGitRepositoryError, ValueError, git.exc.GitError):
+        return None
 
 # here the subprocess stops loading, because __name__ is NOT '__main__'
 # gradio will reload
@@ -369,12 +382,16 @@ if '__main__' == __name__:
 
         return (img[0], sections)
 
+    WAM_VERSION = get_app_git_commit() or "unknown"
+
     with gr.Blocks(title="Watermark Anything Demo") as demo:
-        gr.Markdown("""
+        gr.Markdown(f"""
         # Watermark Anything Demo
         ![](https://badge.mcpx.dev?type=server 'MCP Server')
         This app demonstrates watermark detection and embedding using the Watermark Anything model.
         
+        > watermark-anything: [`{WAM_VERSION}`](https://github.com/facebookresearch/watermark-anything/tree/{WAM_VERSION})
+
         Find the original project [here](https://github.com/facebookresearch/watermark-anything).
         Or this project [here](https://github.com/xiaoyao9184/docker-wam).
         See the [README](./blob/main/README.md) for Spaces's metadata.
