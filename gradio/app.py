@@ -11,7 +11,7 @@ MODEL_ID = "facebook/watermark-anything"
 
 def install_src():
     if not os.path.exists(LOCAL_PATH):
-        print(f"Cloning repository from {REPO_URL}...")
+        print(f"Cloning repository from {REPO_URL}@{REPO_BRANCH} to {LOCAL_PATH}...")
         repo = git.Repo.clone_from(REPO_URL, LOCAL_PATH)
         repo.git.checkout(REPO_BRANCH)
     else:
@@ -26,6 +26,7 @@ def install_src():
 
 def install_model():
     checkpoint_path = os.path.join(LOCAL_PATH, "checkpoints")
+    print(f"Downloading model from {MODEL_ID}...")
     hf_hub_download(repo_id=MODEL_ID, filename='checkpoint.pth', local_dir=checkpoint_path)
 
 # clone repo and download model
